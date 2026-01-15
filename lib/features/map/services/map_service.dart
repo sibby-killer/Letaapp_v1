@@ -125,4 +125,139 @@ class MapService {
       ),
     ).map((position) => LatLng(position.latitude, position.longitude));
   }
+
+  // Search for places using Nominatim (OpenStreetMap) - FREE
+  Future<List<PlaceSearchResult>> searchPlaces(String query, {LatLng? nearLocation}) async {
+    try {
+      // Focus search on Kakamega, Kenya area
+      final viewbox = nearLocation != null
+          ? '${nearLocation.longitude - 0.5},${nearLocation.latitude - 0.5},${nearLocation.longitude + 0.5},${nearLocation.latitude + 0.5}'
+          : '34.2,0.0,35.2,0.6'; // Kakamega region bounding box
+      
+      final url = Uri.parse(
+        'https://nominatim.openstreetmap.org/search'
+        '?q=${Uri.encodeComponent(query)},Kenya'
+        '&format=json'
+        '&addressdetails=1'
+        '&limit=10'
+        '&viewbox=$viewbox'
+        '&bounded=0'
+      );
+
+      final response = await http.get(
+        url,
+        headers: {
+          'User-Agent': 'LetaApp/1.0 (delivery app for Kakamega)',
+        },
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception('Place search failed');
+      }
+
+      final List<dynamic> data = json.decode(response.body);
+      
+      return data.map((place) => PlaceSearchResult.fromNominatim(place)).toList();
+    } catch (e) {
+      throw Exception('Place search failed: ${e.toString()}');
+    }
+  }
+
+  // Reverse geocode - get address from coordinates
+  Future<PlaceSearchResult> reverseGeocode(LatLng location) async {
+    try {
+      final url = Uri.parse(
+        'https://nominatim.openstreetmap.org/reverse'
+        '?lat=${location.latitude}'
+        '&lon=${location.longitude}'
+        '&format=json'
+        '&addressdetails=1'
+      );
+
+      final response = await http.get(
+        url,
+        headers: {
+          'User-Agent': 'LetaApp/1.0 (delivery app for Kakamega)',
+        },
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception('Reverse geocoding failed');
+      }
+
+      final data = json.decode(response.body);
+      return PlaceSearchResult.fromNominatim(data);
+    } catch (e) {
+      throw Exception('Reverse geocoding failed: ${e.toString()}');
+    }
+  }
+
+  // Get current location with address
+  Future<PlaceSearchResult> getCurrentLocationWithAddress() async {
+    final location = await getCurrentLocation();
+    return await reverseGeocode(location);
+  }
+}
+
+// Place search result model
+class PlaceSearchResult {
+  final String displayName;
+  final String? street;
+  final String? suburb;
+  final String? city;
+  final String? county;
+  final String? country;
+  final double latitude;
+  final double longitude;
+  final String placeId;
+
+  PlaceSearchResult({
+    required this.displayName,
+    this.street,
+    this.suburb,
+    this.city,
+    this.county,
+    this.country,
+    required this.latitude,
+    required this.longitude,
+    required this.placeId,
+  });
+
+  factory PlaceSearchResult.fromNominatim(Map<String, dynamic> json) {
+    final address = json['address'] as Map<String, dynamic>? ?? {};
+    
+    return PlaceSearchResult(
+      displayName: json['display_name'] as String? ?? '',
+      street: address['road'] as String? ?? address['street'] as String?,
+      suburb: address['suburb'] as String? ?? address['neighbourhood'] as String?,
+      city: address['city'] as String? ?? address['town'] as String? ?? address['village'] as String?,
+      county: address['county'] as String? ?? address['state'] as String?,
+      country: address['country'] as String?,
+      latitude: double.tryParse(json['lat']?.toString() ?? '0') ?? 0.0,
+      longitude: double.tryParse(json['lon']?.toString() ?? '0') ?? 0.0,
+      placeId: json['place_id']?.toString() ?? '',
+    );
+  }
+
+  // Get a short, readable address
+  String get shortAddress {
+    final parts = <String>[];
+    if (street != null) parts.add(street!);
+    if (suburb != null) parts.add(suburb!);
+    if (city != null) parts.add(city!);
+    return parts.isEmpty ? displayName : parts.join(', ');
+  }
+
+  // Get full address for display
+  String get fullAddress {
+    final parts = <String>[];
+    if (street != null) parts.add(street!);
+    if (suburb != null) parts.add(suburb!);
+    if (city != null) parts.add(city!);
+    if (county != null) parts.add(county!);
+    if (country != null) parts.add(country!);
+    return parts.isEmpty ? displayName : parts.join(', ');
+  }
+
+  LatLng get latLng => LatLng(latitude, longitude);
 }

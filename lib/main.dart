@@ -11,6 +11,7 @@ import 'core/services/service_locator.dart';
 import 'features/auth/providers/auth_provider.dart';
 import 'features/cart/providers/cart_provider.dart';
 import 'features/order/providers/order_provider.dart';
+import 'features/vendor/providers/vendor_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -206,6 +207,7 @@ class LetaApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
         ChangeNotifierProvider(create: (_) => OrderProvider()),
+        ChangeNotifierProvider(create: (_) => VendorProvider()),
       ],
       child: MaterialApp(
         title: 'Leta App',

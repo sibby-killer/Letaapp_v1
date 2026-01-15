@@ -5,6 +5,7 @@ import 'supabase_realtime_service.dart';
 import '../../features/map/services/map_service.dart';
 import '../../features/payment/services/payment_service.dart';
 import '../../features/ai/services/ai_service.dart';
+import '../../features/vendor/services/vendor_service.dart';
 
 final getIt = GetIt.instance;
 
@@ -19,4 +20,5 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton<MapService>(() => MapService());
   getIt.registerLazySingleton<PaymentService>(() => PaymentService());
   getIt.registerLazySingleton<AIService>(() => AIService());
+  getIt.registerLazySingleton<VendorService>(() => VendorService());
 }

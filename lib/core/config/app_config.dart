@@ -70,30 +70,59 @@ class AppConfig {
   static const int appBuildNumber = 1;
   
   // ============================================================================
-  // PAYSTACK BANKS (Nigeria)
+  // PAYSTACK BANKS (Kenya)
   // ============================================================================
   
-  static const List<Map<String, String>> nigerianBanks = [
-    {'name': 'Access Bank', 'code': '044'},
-    {'name': 'Citibank Nigeria', 'code': '023'},
-    {'name': 'Diamond Bank', 'code': '063'},
-    {'name': 'Ecobank Nigeria', 'code': '050'},
-    {'name': 'Fidelity Bank', 'code': '070'},
-    {'name': 'First Bank of Nigeria', 'code': '011'},
-    {'name': 'First City Monument Bank', 'code': '214'},
-    {'name': 'Guaranty Trust Bank', 'code': '058'},
-    {'name': 'Heritage Bank', 'code': '030'},
-    {'name': 'Keystone Bank', 'code': '082'},
-    {'name': 'Providus Bank', 'code': '101'},
-    {'name': 'Polaris Bank', 'code': '076'},
-    {'name': 'Stanbic IBTC Bank', 'code': '221'},
-    {'name': 'Standard Chartered Bank', 'code': '068'},
-    {'name': 'Sterling Bank', 'code': '232'},
-    {'name': 'Suntrust Bank', 'code': '100'},
-    {'name': 'Union Bank of Nigeria', 'code': '032'},
-    {'name': 'United Bank for Africa', 'code': '033'},
-    {'name': 'Unity Bank', 'code': '215'},
-    {'name': 'Wema Bank', 'code': '035'},
-    {'name': 'Zenith Bank', 'code': '057'},
+  static const List<Map<String, String>> kenyanBanks = [
+    {'name': 'Kenya Commercial Bank (KCB)', 'code': 'KCB'},
+    {'name': 'Equity Bank', 'code': 'EQUITY'},
+    {'name': 'Co-operative Bank', 'code': 'COOP'},
+    {'name': 'ABSA Bank Kenya', 'code': 'ABSA'},
+    {'name': 'Standard Chartered Kenya', 'code': 'SCBK'},
+    {'name': 'NCBA Bank', 'code': 'NCBA'},
+    {'name': 'I&M Bank', 'code': 'IMB'},
+    {'name': 'Diamond Trust Bank', 'code': 'DTB'},
+    {'name': 'Stanbic Bank Kenya', 'code': 'STANBIC'},
+    {'name': 'Family Bank', 'code': 'FAMILY'},
+    {'name': 'Prime Bank', 'code': 'PRIME'},
+    {'name': 'Bank of Africa', 'code': 'BOA'},
+    {'name': 'Sidian Bank', 'code': 'SIDIAN'},
   ];
+
+  // ============================================================================
+  // MOBILE MONEY (Kenya)
+  // ============================================================================
+  
+  static const List<Map<String, String>> mobileMoneyProviders = [
+    {'name': 'M-Pesa (Safaricom)', 'code': 'MPESA'},
+    {'name': 'Airtel Money', 'code': 'AIRTEL'},
+    {'name': 'T-Kash (Telkom)', 'code': 'TKASH'},
+  ];
+
+  // ============================================================================
+  // PAYMENT SPLIT CONFIGURATION (Kenya - KSH)
+  // ============================================================================
+  // Example: For a 155 KSH order:
+  // - Store gets: 100 KSH (64.5%)
+  // - Rider gets: 40 KSH (25.8%)
+  // - Company gets: 10 KSH (6.5%)
+  // - Tax/Transaction: 5 KSH (3.2%)
+  
+  static const double storeSharePercent = 64.5;      // Store gets ~64.5%
+  static const double riderSharePercent = 25.8;      // Rider gets ~25.8%
+  static const double companySharePercent = 6.5;     // Company gets ~6.5%
+  static const double taxTransactionPercent = 3.2;   // Tax + transaction fees ~3.2%
+  
+  // Minimum order amount in KSH
+  static const double minimumOrderAmount = 50.0;
+  
+  // Kenya phone prefix
+  static const String kenyaPhonePrefix = '+254';
+  static const String kenyaCountryCode = 'KE';
+  
+  // Default location (Kakamega, Kenya - MMUST area)
+  static const double defaultLatitude = 0.2827;
+  static const double defaultLongitude = 34.7519;
+  static const String defaultCity = 'Kakamega';
+  static const String defaultCountry = 'Kenya';
 }

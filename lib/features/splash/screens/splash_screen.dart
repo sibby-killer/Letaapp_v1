@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../core/routes/app_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../vendor/providers/vendor_provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -31,6 +32,27 @@ class _SplashScreenState extends State<SplashScreen> {
       if (!mounted) return;
       
       final role = authProvider.currentUser?.role ?? 'customer';
+      final userId = authProvider.currentUser?.id;
+      
+      // For vendors, check if they have a store setup
+      if (role == 'vendor' && userId != null) {
+        final vendorProvider = context.read<VendorProvider>();
+        final hasStore = await vendorProvider.checkAndLoadStore(userId);
+        
+        if (!mounted) return;
+        
+        if (!hasStore) {
+          // Redirect to vendor onboarding if no store
+          Navigator.of(context).pushReplacementNamed(AppRouter.vendorOnboarding);
+          return;
+        }
+        
+        // Load store stats
+        await vendorProvider.loadStats();
+      }
+      
+      if (!mounted) return;
+      
       Navigator.of(context).pushReplacementNamed(
         AppRouter.getRoleBasedRoute(role),
       );
