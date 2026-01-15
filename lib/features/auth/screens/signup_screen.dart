@@ -78,25 +78,80 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   void _showErrorDialog(String message) {
+    final bool isNetworkError = message.toLowerCase().contains('network') ||
+        message.toLowerCase().contains('connection') ||
+        message.toLowerCase().contains('internet');
+    
+    final bool isEmailError = message.toLowerCase().contains('email') &&
+        (message.toLowerCase().contains('already') || 
+         message.toLowerCase().contains('registered'));
+
+    String title = 'Sign Up Failed';
+    IconData icon = Icons.error_outline;
+
+    if (isNetworkError) {
+      title = 'Connection Error';
+      icon = Icons.wifi_off;
+    } else if (isEmailError) {
+      title = 'Email Already Registered';
+      icon = Icons.email_outlined;
+    }
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.error_outline, color: AppTheme.errorRed),
-            SizedBox(width: 8),
-            Text('Sign Up Failed'),
+            Icon(icon, color: AppTheme.errorRed),
+            const SizedBox(width: 8),
+            Expanded(child: Text(title)),
           ],
         ),
-        content: Text(
-          message,
-          style: const TextStyle(fontSize: 16),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              message,
+              style: const TextStyle(fontSize: 16),
+            ),
+            if (isNetworkError) ...[
+              const SizedBox(height: 12),
+              const Text(
+                'Please check your internet connection and try again.',
+                style: TextStyle(fontSize: 14, color: AppTheme.textGray),
+              ),
+            ],
+            if (isEmailError) ...[
+              const SizedBox(height: 12),
+              const Text(
+                'Try signing in instead, or use a different email address.',
+                style: TextStyle(fontSize: 14, color: AppTheme.textGray),
+              ),
+            ],
+          ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('OK'),
           ),
+          if (isNetworkError)
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _handleSignup();
+              },
+              child: const Text('Retry'),
+            ),
+          if (isEmailError)
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.of(context).pop(); // Go back to login
+              },
+              child: const Text('Sign In'),
+            ),
         ],
       ),
     );

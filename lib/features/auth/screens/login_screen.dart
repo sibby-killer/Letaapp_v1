@@ -48,24 +48,161 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _showErrorDialog(String message) {
+    final bool isNetworkError = message.toLowerCase().contains('network') ||
+        message.toLowerCase().contains('connection') ||
+        message.toLowerCase().contains('internet');
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.error_outline, color: AppTheme.errorRed),
-            SizedBox(width: 8),
-            Text('Login Failed'),
+            Icon(
+              isNetworkError ? Icons.wifi_off : Icons.error_outline,
+              color: AppTheme.errorRed,
+            ),
+            const SizedBox(width: 8),
+            Text(isNetworkError ? 'Connection Error' : 'Login Failed'),
           ],
         ),
-        content: Text(
-          message,
-          style: const TextStyle(fontSize: 16),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              message,
+              style: const TextStyle(fontSize: 16),
+            ),
+            if (isNetworkError) ...[
+              const SizedBox(height: 12),
+              const Text(
+                'Please check your internet connection and try again.',
+                style: TextStyle(fontSize: 14, color: AppTheme.textGray),
+              ),
+            ],
+          ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('OK'),
+          ),
+          if (isNetworkError)
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _handleLogin();
+              },
+              child: const Text('Retry'),
+            ),
+        ],
+      ),
+    );
+  }
+
+  void _showForgotPasswordDialog() {
+    final resetEmailController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.lock_reset, color: AppTheme.primaryGreen),
+            SizedBox(width: 8),
+            Text('Reset Password'),
+          ],
+        ),
+        content: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Enter your email address and we\'ll send you a link to reset your password.',
+                style: TextStyle(fontSize: 14),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: resetEmailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  hintText: 'your@email.com',
+                  prefixIcon: Icon(Icons.email_outlined),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your email';
+                  }
+                  if (!value.contains('@')) {
+                    return 'Please enter a valid email';
+                  }
+                  return null;
+                },
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          Consumer<AuthProvider>(
+            builder: (context, authProvider, _) {
+              return TextButton(
+                onPressed: authProvider.isLoading
+                    ? null
+                    : () async {
+                        if (!formKey.currentState!.validate()) return;
+
+                        final success = await authProvider.resetPassword(
+                          resetEmailController.text.trim(),
+                        );
+
+                        if (!context.mounted) return;
+                        
+                        final resetSuccess = success;
+                        final errorMsg = authProvider.errorMessage;
+                        
+                        Navigator.pop(context);
+
+                        if (!mounted) return;
+                        
+                        if (resetSuccess) {
+                          ScaffoldMessenger.of(this.context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Password reset link sent! Check your email.',
+                              ),
+                              backgroundColor: AppTheme.primaryGreen,
+                              duration: Duration(seconds: 4),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(this.context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                errorMsg ??
+                                    'Failed to send reset email. Please try again.',
+                              ),
+                              backgroundColor: AppTheme.errorRed,
+                            ),
+                          );
+                        }
+                      },
+                child: authProvider.isLoading
+                    ? const SizedBox(
+                        height: 16,
+                        width: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text('Send Reset Link'),
+              );
+            },
           ),
         ],
       ),
@@ -191,9 +328,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 16),
                 // Forgot Password
                 TextButton(
-                  onPressed: () {
-                    // TODO: Implement forgot password
-                  },
+                  onPressed: () => _showForgotPasswordDialog(),
                   child: const Text('Forgot Password?'),
                 ),
                 const SizedBox(height: 32),
