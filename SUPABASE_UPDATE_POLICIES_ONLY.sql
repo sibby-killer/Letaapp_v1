@@ -106,12 +106,12 @@ USING (true);
 CREATE POLICY "Vendors can insert own stores"
 ON stores FOR INSERT
 TO authenticated
-WITH CHECK (auth.uid() = owner_id);
+WITH CHECK (auth.uid() = vendor_id);
 
 CREATE POLICY "Vendors can update own stores"
 ON stores FOR UPDATE
 TO authenticated
-USING (auth.uid() = owner_id);
+USING (auth.uid() = vendor_id);
 
 -- ============================================================================
 -- 4. FIX PRODUCTS TABLE RLS
