@@ -42,13 +42,34 @@ class _LoginScreenState extends State<LoginScreen> {
         AppRouter.getRoleBasedRoute(role),
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(authProvider.errorMessage ?? 'Login failed'),
-          backgroundColor: AppTheme.errorRed,
-        ),
-      );
+      // Show user-friendly error dialog
+      _showErrorDialog(authProvider.errorMessage ?? 'Login failed. Please try again.');
     }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.error_outline, color: AppTheme.errorRed),
+            SizedBox(width: 8),
+            Text('Login Failed'),
+          ],
+        ),
+        content: Text(
+          message,
+          style: const TextStyle(fontSize: 16),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

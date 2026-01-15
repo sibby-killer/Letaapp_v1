@@ -51,6 +51,15 @@ class _SignupScreenState extends State<SignupScreen> {
     if (!mounted) return;
 
     if (success) {
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Account created successfully! 🎉'),
+          backgroundColor: AppTheme.primaryGreen,
+          duration: Duration(seconds: 2),
+        ),
+      );
+      
       // If vendor, go to vendor onboarding
       if (_selectedRole == 'vendor') {
         Navigator.of(context).pushReplacementNamed(
@@ -63,13 +72,34 @@ class _SignupScreenState extends State<SignupScreen> {
         );
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(authProvider.errorMessage ?? 'Signup failed'),
-          backgroundColor: AppTheme.errorRed,
-        ),
-      );
+      // Show user-friendly error message
+      _showErrorDialog(authProvider.errorMessage ?? 'Something went wrong. Please try again.');
     }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.error_outline, color: AppTheme.errorRed),
+            SizedBox(width: 8),
+            Text('Sign Up Failed'),
+          ],
+        ),
+        content: Text(
+          message,
+          style: const TextStyle(fontSize: 16),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
