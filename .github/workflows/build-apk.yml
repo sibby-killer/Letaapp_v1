@@ -24,6 +24,16 @@ jobs:
         flutter-version: '3.38.6'
         channel: 'stable'
     
+    - name: Create .env file from secrets
+      run: |
+        cat > assets/.env << EOF
+        SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+        SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+        PAYSTACK_PUBLIC_KEY=${{ secrets.PAYSTACK_PUBLIC_KEY }}
+        PAYSTACK_SECRET_KEY=${{ secrets.PAYSTACK_SECRET_KEY }}
+        GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}
+        EOF
+    
     - name: Get dependencies
       run: flutter pub get
     

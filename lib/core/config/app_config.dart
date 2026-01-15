@@ -1,37 +1,23 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class AppConfig {
-  // Supabase Configuration
-  static const String supabaseUrl = String.fromEnvironment(
-    'SUPABASE_URL',
-    defaultValue: 'YOUR_SUPABASE_URL',
-  );
-  
-  static const String supabaseAnonKey = String.fromEnvironment(
-    'SUPABASE_ANON_KEY',
-    defaultValue: 'YOUR_SUPABASE_ANON_KEY',
-  );
-  
-  // Socket.io Configuration
-  static const String socketUrl = String.fromEnvironment(
-    'SOCKET_URL',
-    defaultValue: 'YOUR_SOCKET_SERVER_URL',
-  );
+  // Supabase Configuration (from .env file)
+  static String get supabaseUrl => dotenv.env['SUPABASE_URL'] ?? '';
+  static String get supabaseAnonKey => dotenv.env['SUPABASE_ANON_KEY'] ?? '';
   
   // Paystack Configuration
-  static const String paystackPublicKey = String.fromEnvironment(
-    'PAYSTACK_PUBLIC_KEY',
-    defaultValue: 'YOUR_PAYSTACK_PUBLIC_KEY',
-  );
-  
-  static const String paystackSecretKey = String.fromEnvironment(
-    'PAYSTACK_SECRET_KEY',
-    defaultValue: 'YOUR_PAYSTACK_SECRET_KEY',
-  );
+  static String get paystackPublicKey => dotenv.env['PAYSTACK_PUBLIC_KEY'] ?? '';
+  static String get paystackSecretKey => dotenv.env['PAYSTACK_SECRET_KEY'] ?? '';
   
   // Groq AI Configuration
-  static const String groqApiKey = String.fromEnvironment(
-    'GROQ_API_KEY',
-    defaultValue: 'YOUR_GROQ_API_KEY',
-  );
+  static String get groqApiKey => dotenv.env['GROQ_API_KEY'] ?? '';
+  
+  // Check if Supabase is configured
+  static bool get isSupabaseConfigured => 
+      supabaseUrl.isNotEmpty && 
+      supabaseUrl != 'https://your-project.supabase.co' &&
+      supabaseAnonKey.isNotEmpty &&
+      supabaseAnonKey != 'your-anon-key-here';
   
   // App Constants
   static const double platformFee = 5.00;
