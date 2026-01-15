@@ -2,6 +2,23 @@
 
 > **Production-Ready Flutter App** • Supabase Backend • Real-time Features • Multi-Role System
 
+[![Build APK](https://github.com/sibby-killer/Letaapp_v1/actions/workflows/build-apk.yml/badge.svg)](https://github.com/sibby-killer/Letaapp_v1/actions/workflows/build-apk.yml)
+
+## 📱 Quick Start
+
+1. **Add GitHub Secrets** (Settings → Secrets → Actions):
+   - `SUPABASE_URL`
+   - `SUPABASE_ANON_KEY`
+   - `PAYSTACK_PUBLIC_KEY`
+   - `PAYSTACK_SECRET_KEY`
+   - `GROQ_API_KEY`
+
+2. **Push to build** - GitHub Actions auto-builds APK
+
+3. **Download APK** from Actions → Artifacts
+
+📚 **Full documentation:** [DOCUMENTATION.md](DOCUMENTATION.md)
+
 > **Production-Grade Flutter Application** built following the VIBE Framework
 
 A complete, unified multi-role delivery platform supporting **Customers**, **Vendors**, **Riders**, and **Admins** in a single codebase with dynamic routing.

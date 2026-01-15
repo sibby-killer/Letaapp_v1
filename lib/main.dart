@@ -24,9 +24,9 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
   
-  // Check if Supabase is configured
-  if (!AppConfig.isSupabaseConfigured) {
-    runApp(const ConfigurationErrorApp());
+  // Check if ALL services are configured
+  if (!AppConfig.isFullyConfigured) {
+    runApp(ConfigurationErrorApp(missingConfigs: AppConfig.missingConfigurations));
     return;
   }
   
@@ -42,9 +42,11 @@ void main() async {
   runApp(const LetaApp());
 }
 
-/// Shows an error screen if Supabase is not configured
+/// Shows an error screen if required services are not configured
 class ConfigurationErrorApp extends StatelessWidget {
-  const ConfigurationErrorApp({super.key});
+  final List<String> missingConfigs;
+  
+  const ConfigurationErrorApp({super.key, required this.missingConfigs});
 
   @override
   Widget build(BuildContext context) {
@@ -53,11 +55,12 @@ class ConfigurationErrorApp extends StatelessWidget {
       home: Scaffold(
         backgroundColor: const Color(0xFF10B981),
         body: SafeArea(
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                const SizedBox(height: 40),
                 const Icon(
                   Icons.settings_outlined,
                   size: 80,
@@ -74,7 +77,7 @@ class ConfigurationErrorApp extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 const Text(
-                  'Please configure your Supabase credentials in the assets/.env file:',
+                  'Please configure the following in GitHub Secrets or assets/.env file:',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16,
@@ -82,7 +85,44 @@ class ConfigurationErrorApp extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
+                // Missing configurations
                 Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.red.withOpacity(0.5)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        '❌ Missing Configurations:',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      ...missingConfigs.map((config) => Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Text(
+                          '• $config',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.white,
+                          ),
+                        ),
+                      )),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                // Required keys
+                Container(
+                  width: double.infinity,
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.1),
@@ -92,34 +132,61 @@ class ConfigurationErrorApp extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'SUPABASE_URL=https://your-project.supabase.co',
+                        '📋 Required Environment Variables:',
                         style: TextStyle(
-                          fontFamily: 'monospace',
-                          fontSize: 12,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
                       ),
+                      SizedBox(height: 12),
+                      Text(
+                        '# Supabase (supabase.com)',
+                        style: TextStyle(fontSize: 11, color: Colors.white60),
+                      ),
+                      Text(
+                        'SUPABASE_URL=https://xxx.supabase.co',
+                        style: TextStyle(fontFamily: 'monospace', fontSize: 11, color: Colors.white),
+                      ),
+                      Text(
+                        'SUPABASE_ANON_KEY=eyJhbG...',
+                        style: TextStyle(fontFamily: 'monospace', fontSize: 11, color: Colors.white),
+                      ),
                       SizedBox(height: 8),
                       Text(
-                        'SUPABASE_ANON_KEY=your-anon-key-here',
-                        style: TextStyle(
-                          fontFamily: 'monospace',
-                          fontSize: 12,
-                          color: Colors.white,
-                        ),
+                        '# Paystack (paystack.com)',
+                        style: TextStyle(fontSize: 11, color: Colors.white60),
+                      ),
+                      Text(
+                        'PAYSTACK_PUBLIC_KEY=pk_test_xxx',
+                        style: TextStyle(fontFamily: 'monospace', fontSize: 11, color: Colors.white),
+                      ),
+                      Text(
+                        'PAYSTACK_SECRET_KEY=sk_test_xxx',
+                        style: TextStyle(fontFamily: 'monospace', fontSize: 11, color: Colors.white),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        '# Groq AI (console.groq.com)',
+                        style: TextStyle(fontSize: 11, color: Colors.white60),
+                      ),
+                      Text(
+                        'GROQ_API_KEY=gsk_xxx',
+                        style: TextStyle(fontFamily: 'monospace', fontSize: 11, color: Colors.white),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 24),
                 const Text(
-                  'Get your credentials from:\nsupabase.com → Your Project → Settings → API',
+                  'Add these to GitHub Secrets:\nRepo Settings → Secrets → Actions',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.white70,
                   ),
                 ),
+                const SizedBox(height: 40),
               ],
             ),
           ),
