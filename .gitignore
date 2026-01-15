@@ -26,7 +26,6 @@ migrate_working_dir/
 **/ios/Flutter/.last_build_id
 .dart_tool/
 .flutter-plugins
-.gradle/
 .flutter-plugins-dependencies
 .packages
 .pub-cache/
@@ -44,10 +43,55 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Environment variables
+# Environment files (IMPORTANT!)
 .env
-.env.local
-.env.*.local
+*.env
+lib/.env
+key.properties
+android/key.properties
 
-# API Keys and secrets
-**/lib/core/config/secrets.dart
+# Keystore files (NEVER commit these!)
+*.jks
+*.keystore
+
+# Temporary files
+tmp_rovodev_*
+*.tmp
+*.temp
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Gradle files
+.gradle/
+android/.gradle/
+android/local.properties
+
+# Node modules (if using socket server)
+socket-server/node_modules/
+node_modules/
+
+# Logs
+*.log
+logs/
+
+# APK files (optional - uncomment if you don't want APKs in repo)
+# *.apk
+# build/app/outputs/
+
+# Generated files
+*.g.dart
+*.freezed.dart
+*.gr.dart
+
+# Coverage
+coverage/
+*.lcov

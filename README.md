@@ -1,4 +1,6 @@
-# Leta App - Hyper-Local Multi-Vendor Ecosystem
+# 🚀 Leta App - Hyper-Local Multi-Vendor Ecosystem
+
+> **Production-Ready Flutter App** • Supabase Backend • Real-time Features • Multi-Role System
 
 > **Production-Grade Flutter Application** built following the VIBE Framework
 
@@ -23,7 +25,7 @@ A complete, unified multi-role delivery platform supporting **Customers**, **Ven
 | **Frontend** | Flutter (Material 3 Design) |
 | **Backend** | Supabase (PostgreSQL + PostGIS) |
 | **Authentication** | Supabase Auth |
-| **Real-time Chat** | Socket.io |
+| **Real-time Chat** | Supabase Realtime (Postgres Changes + Broadcast) |
 | **Offline Cache** | SQLite (sqflite) |
 | **Maps** | OpenStreetMap + flutter_map + OSRM |
 | **Payments** | Paystack (Split Payments) |
@@ -48,7 +50,7 @@ A complete, unified multi-role delivery platform supporting **Customers**, **Ven
 ### B — BACKEND (Logic & Data)
 - **Database**: Relational schema with PostGIS for geospatial queries
 - **Offline First**: SQLite caching with automatic sync
-- **Real-time**: Socket.io for chat with typing indicators
+- **Real-time**: Supabase Realtime for chat, typing indicators, and live location tracking
 - **AI Integration**: Smart vendor filtering via Groq API
 
 ### E — EXCLUSIONS (Strict Rules)
@@ -106,7 +108,7 @@ leta_app/
 │   │   ├── order/
 │   │   │   └── providers/order_provider.dart
 │   │   ├── chat/
-│   │   │   └── services/chat_service.dart  # Socket.io integration
+│   │   │   └── services/supabase_realtime_service.dart  # Supabase Realtime
 │   │   ├── map/
 │   │   │   └── services/map_service.dart   # OSM + OSRM
 │   │   ├── payment/
