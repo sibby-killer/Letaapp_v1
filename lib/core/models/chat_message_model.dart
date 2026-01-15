@@ -2,10 +2,10 @@ class ChatMessageModel {
   final String id;
   final String roomId;
   final String senderId;
-  final String senderName;
+  final String? senderName;
   final String? senderImageUrl;
-  final String message;
-  final String type; // text, image, location, system
+  final String content;
+  final String messageType; // text, image, location, system
   final Map<String, dynamic>? metadata;
   final bool isRead;
   final DateTime createdAt;
@@ -15,10 +15,10 @@ class ChatMessageModel {
     required this.id,
     required this.roomId,
     required this.senderId,
-    required this.senderName,
+    this.senderName,
     this.senderImageUrl,
-    required this.message,
-    this.type = 'text',
+    required this.content,
+    this.messageType = 'text',
     this.metadata,
     this.isRead = false,
     required this.createdAt,
@@ -26,14 +26,17 @@ class ChatMessageModel {
   });
 
   factory ChatMessageModel.fromJson(Map<String, dynamic> json) {
+    // Handle joined sender data from Supabase query
+    final sender = json['sender'] as Map<String, dynamic>?;
+    
     return ChatMessageModel(
       id: json['id'] as String,
       roomId: json['room_id'] as String,
       senderId: json['sender_id'] as String,
-      senderName: json['sender_name'] as String,
-      senderImageUrl: json['sender_image_url'] as String?,
-      message: json['message'] as String,
-      type: json['type'] as String? ?? 'text',
+      senderName: sender?['full_name'] as String? ?? json['sender_name'] as String?,
+      senderImageUrl: sender?['profile_image_url'] as String? ?? json['sender_image_url'] as String?,
+      content: json['content'] as String? ?? json['message'] as String? ?? '',
+      messageType: json['message_type'] as String? ?? json['type'] as String? ?? 'text',
       metadata: json['metadata'] as Map<String, dynamic>?,
       isRead: json['is_read'] as bool? ?? false,
       createdAt: DateTime.parse(json['created_at'] as String),
@@ -50,8 +53,8 @@ class ChatMessageModel {
       'sender_id': senderId,
       'sender_name': senderName,
       'sender_image_url': senderImageUrl,
-      'message': message,
-      'type': type,
+      'content': content,
+      'message_type': messageType,
       'metadata': metadata,
       'is_read': isRead,
       'created_at': createdAt.toIso8601String(),

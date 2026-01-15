@@ -4,6 +4,7 @@ import '../../../core/routes/app_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../vendor/providers/vendor_provider.dart';
+import '../../rider/providers/rider_provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -49,6 +50,23 @@ class _SplashScreenState extends State<SplashScreen> {
         
         // Load store stats
         await vendorProvider.loadStats();
+      }
+      
+      // For riders, check if they have a profile setup
+      if (role == 'rider' && userId != null) {
+        final riderProvider = context.read<RiderProvider>();
+        final hasProfile = await riderProvider.checkAndLoadProfile(userId);
+        
+        if (!mounted) return;
+        
+        if (!hasProfile) {
+          // Redirect to rider onboarding if no profile
+          Navigator.of(context).pushReplacementNamed(AppRouter.riderOnboarding);
+          return;
+        }
+        
+        // Load rider earnings
+        await riderProvider.loadEarnings(userId);
       }
       
       if (!mounted) return;
